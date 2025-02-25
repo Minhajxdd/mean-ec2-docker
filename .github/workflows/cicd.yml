@@ -11,5 +11,22 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
+      - name: Create .env file
+        run: echo "MONGO_URL=${{secrets.MONGO_URL}}>.env"
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build docker image
+        run: docker build -t minhajxdd/nodejs-app .
+      - name: Publish image to docker hub
+        run: docker push minhajxdd/nodejs-app:latest
+  
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull minhajxdd/nodejs-app:latest
+      - name: Delete old container
+        run: docker rm -f nodejs-app-container  
+      - name: Run docker container
+        run: docker run -d -p 4000:4000 --name nodejs-app-container minhajxdd/nodejs-app  
