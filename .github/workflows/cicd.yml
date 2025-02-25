@@ -1,0 +1,15 @@
+name: Deploy Node Application
+
+on:
+  push:
+    branches:
+      - main-ec2-docker
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
